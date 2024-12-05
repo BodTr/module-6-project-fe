@@ -14,7 +14,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'));
 // Pages
 const Login = React.lazy(() => import('./pages/login/Login'));
 const Register = React.lazy(() => import('./pages/register/Register'));
-
+const UpdateProfile = React.lazy(() => import('./pages/profile/UpdateProfile')); // Import trang UpdateProfile
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -46,10 +46,9 @@ const App = () => {
         <Routes>
           {/* Redirect root (/) to /login */}
           <Route exact path="/" element={<Navigate to="/login" />} />
-          <Route exact path="/update" element={<Navigate to="/update" />} />
           <Route exact path="/login" name="Login Page" element={<Login />} />
           <Route exact path="/register" name="Register Page" element={<Register />} />
-          
+          <Route exact path="/update-profile" name="Update Profile" element={<UpdateProfile />} />
           <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>
