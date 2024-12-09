@@ -30,6 +30,7 @@ const AppHeaderDropdown = () => {
       .then((response) => {
         if (response.data.avatarPath) {
           setAvatar(`http://localhost:8080${response.data.avatarPath}`); // Gán đường dẫn đầy đủ của avatar
+          console.log(avatar, "avatar")
         } else {
           setAvatar('/default-avatar.png'); // Nếu không có avatarPath, dùng ảnh mặc định
         }
@@ -38,7 +39,7 @@ const AppHeaderDropdown = () => {
         console.error('Lỗi khi tải avatar:', error);
         setAvatar('/default-avatar.png'); // Nếu lỗi, dùng ảnh mặc định
       });
-  }, []);
+  }, [avatar]);
 
   const handleProfileClick = () => {
     navigate('/update-profile') // Điều hướng đến trang Update Profile

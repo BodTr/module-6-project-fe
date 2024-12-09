@@ -38,6 +38,7 @@ const UpdateProfile = () => {
 
   // Fetch current user data when component loads
   useEffect(() => {
+    console.log(formData.avatarPath, "formData.avatarPath")
     const token = localStorage.getItem('token')
     if (!token) {
       console.error('Token không tồn tại. Người dùng chưa đăng nhập.')
