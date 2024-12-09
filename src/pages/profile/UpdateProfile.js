@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import {
   CButton,
   CCard,
@@ -23,10 +25,12 @@ const UpdateProfile = () => {
     gender: '',
     email: '',
     phone: '',
+    avatarPath: '/default-avatar.png',
   })
 
   const [isLoading, setIsLoading] = useState(true)
   const token = localStorage.getItem('token')
+  const navigate = useNavigate()
   if (!token) {
     console.error('Token không tồn tại!')
   }
@@ -34,12 +38,12 @@ const UpdateProfile = () => {
 
   // Fetch current user data when component loads
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
     if (!token) {
-      console.error('Token không tồn tại. Người dùng chưa đăng nhập.');
-      toast.error('Bạn cần đăng nhập để thực hiện thao tác này.');
-      window.location.href = '/login'; // Điều hướng về trang login nếu token không tồn tại
-      return;
+      console.error('Token không tồn tại. Người dùng chưa đăng nhập.')
+      toast.error('Bạn cần đăng nhập để thực hiện thao tác này.')
+      window.location.href = '/login' // Điều hướng về trang login nếu token không tồn tại
+      return
     }
     axios
       .get('http://localhost:8080/api/user/profile', {
@@ -50,7 +54,19 @@ const UpdateProfile = () => {
         },
       })
       .then((response) => {
-        setFormData(response.data) // Gán dữ liệu người dùng vào form
+        const data = response.data
+
+        // Định dạng ngày sinh (nếu có)
+        const formattedBirthDate = data.dateOfBirth
+          ? new Date(data.dateOfBirth).toISOString().split('T')[0]
+          : '' ;// Định dạng thành YYYY-MM-DD hoặc để trống nếu null
+        setFormData({
+          ...data,
+          birthDate: formattedBirthDate,
+          avatarPath: data.avatarPath
+            ? `http://localhost:8080${response.data.avatarPath}`
+            : '/default-avatar.png', // Thêm đường dẫn đầy đủ cho ảnh đại diện
+        })
         setIsLoading(false) // Đặt trạng thái tải dữ liệu hoàn tất
       })
       .catch((error) => {
@@ -72,37 +88,37 @@ const UpdateProfile = () => {
 
   // Handle form submission
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const updateData = new FormData();
-  
+    e.preventDefault()
+    const updateData = new FormData()
+
     // Kiểm tra nếu thiếu dữ liệu quan trọng
     if (!formData.birthDate || !formData.gender) {
-      toast.error('Vui lòng điền đầy đủ thông tin ngày sinh và giới tính!');
-      return;
+      toast.error('Vui lòng điền đầy đủ thông tin ngày sinh và giới tính!')
+      return
     }
     if (formData.avatar) {
-        updateData.append('avatar', formData.avatar);
-      }
-  
-    
-    
-    updateData.append('displayName', formData.displayName);
-    updateData.append('dateOfBirth', formData.birthDate); // Đảm bảo đúng trường 'dateOfBirth'
-    updateData.append('gender', formData.gender); // Đảm bảo đúng trường 'gender'
-    updateData.append('phone', formData.phone);
-    updateData.append('email', formData.email);
+      updateData.append('avatar', formData.avatar)
+    }
+
+    updateData.append('displayName', formData.displayName)
+    updateData.append('dateOfBirth', formData.birthDate) // Đảm bảo đúng trường 'dateOfBirth'
+    updateData.append('gender', formData.gender) // Đảm bảo đúng trường 'gender'
+    updateData.append('phone', formData.phone)
+    updateData.append('email', formData.email)
     console.log('Dữ liệu gửi đi:', {
-        avatar: formData.avatar ? formData.avatar.name : null,
-        displayName: formData.displayName,
-        dateOfBirth: formData.birthDate,
-        gender: formData.gender,
-        phone: formData.phone,
-        email: formData.email,
-      });
-      for (let [key, value] of updateData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-  
+      avatar: formData.avatar ? formData.avatar.name : null,
+      displayName: formData.displayName,
+      dateOfBirth: formData.birthDate,
+      gender: formData.gender,
+      phone: formData.phone,
+      email: formData.email,
+    })
+    
+      
+    for (let [key, value] of updateData.entries()) {
+      console.log(`${key}: ${value}`)
+    }
+
     axios
       .put('http://localhost:8080/api/user/update-profile', updateData, {
         headers: {
@@ -110,16 +126,22 @@ const UpdateProfile = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      .then(() => {
-        toast.success('Cập nhật thông tin thành công!');
-        window.location.href = '/users/dashboard#/users'; // Điều hướng sau khi thành công
+      .then((response) => {
+        toast.success('Cập nhật thành công!')
+
+        // Lưu avatarPath mới vào localStorage
+        const updatedUser = {
+          ...JSON.parse(localStorage.getItem('user')),
+          avatarPath: `http://localhost:8080${response.data.avatarPath}`, // Đường dẫn avatar mới
+        }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+
+        navigate('/users/dashboard#/users')
       })
-      .catch((error) => {
-        console.error('Lỗi khi gửi dữ liệu:', error.response?.data || error.message);
-        toast.error('Cập nhật thông tin thất bại!');
-      });
-  };
-  
+      .catch(() => {
+        toast.error('Cập nhật thất bại!')
+      })
+  }
 
   return (
     <CContainer>
@@ -132,6 +154,16 @@ const UpdateProfile = () => {
                 <p>Đang tải dữ liệu...</p>
               ) : (
                 <CForm onSubmit={handleSubmit}>
+                  {formData.avatarPath && (
+                    <div className="mb-3">
+                      <CFormLabel>Ảnh đại diện hiện tại</CFormLabel>
+                      <img
+                        src={formData.avatarPath}
+                        alt="Avatar hiện tại"
+                        style={{ width: '100px', height: '100px', borderRadius: '50%' }}
+                      />
+                    </div>
+                  )}
                   {/* Avatar */}
                   <CFormLabel>Ảnh đại diện</CFormLabel>
                   <CFormInput
