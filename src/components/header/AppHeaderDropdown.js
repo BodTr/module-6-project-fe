@@ -1,9 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CAvatar,
-  CBadge,
   CDropdown,
-  CDropdownDivider,
   CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
@@ -14,24 +12,58 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
-import avatar8 from './../../assets/images/avatars/8.jpg'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const AppHeaderDropdown = () => {
+  const [avatar, setAvatar] = useState('/default-avatar.png') // Đặt ảnh mặc định ban đầu
+  const navigate = useNavigate()
+
+   // Lấy avatar từ API khi ứng dụng tải
+   useEffect(() => {
+    axios
+      .get('http://localhost:8080/api/user/profile', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .then((response) => {
+        if (response.data.avatarPath) {
+          setAvatar(`http://localhost:8080${response.data.avatarPath}`); // Gán đường dẫn đầy đủ của avatar
+        } else {
+          setAvatar('/default-avatar.png'); // Nếu không có avatarPath, dùng ảnh mặc định
+        }
+      })
+      .catch((error) => {
+        console.error('Lỗi khi tải avatar:', error);
+        setAvatar('/default-avatar.png'); // Nếu lỗi, dùng ảnh mặc định
+      });
+  }, []);
+
+  const handleProfileClick = () => {
+    navigate('/update-profile') // Điều hướng đến trang Update Profile
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token') // Xóa token
+    localStorage.removeItem('user') // Xóa thông tin người dùng
+    navigate('/login') // Điều hướng đến trang Login
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar src={avatar} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={handleProfileClick}>
           <CIcon icon={cilUser} className="me-2" />
-          Profile
+          Hồ Sơ
         </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={handleLogout}>
           <CIcon icon={cilAccountLogout} className="me-2" />
-          Log out
+          Đăng xuất
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
