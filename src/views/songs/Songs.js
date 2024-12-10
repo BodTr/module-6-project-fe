@@ -13,6 +13,8 @@ import {
   CModalTitle,
   CForm,
   CFormInput,
+  CFormLabel,
+  CFormTextarea,
 } from '@coreui/react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -26,7 +28,7 @@ const Songs = () => {
     song: null,
     title: '',
     description: '',
-    singerIds: [],
+    singerIds: [1, 2, 3, 4],
   })
 
   const initSongList = async () => {
@@ -74,7 +76,7 @@ const Songs = () => {
       songInfor.append('title', formData.title)
       songInfor.append('songFile', formData.song)
       songInfor.append('description', formData.description)
-      songInfor.append('songFile', formData.singerIds)
+      songInfor.append('singerIds', formData.singerIds)
       console.log("song's title: " + formData.title)
       console.log("song's singers: " + formData.singerIds)
       console.log("song's description: " + formData.description)
@@ -182,16 +184,9 @@ const Songs = () => {
               />
             </div>
             <div className="mb-3">
-              <CFormInput
-                type="text"
-                name="title"
-                id="exampleFormControlInput1"
-                label="title"
-                placeholder="Enter song's title"
-                aria-describedby="exampleFormControlInputHelpInline"
-                onChange={handleChange}
-              />
-            </div>
+                  <CFormLabel htmlFor="exampleFormControlTextarea1">Description</CFormLabel>
+                  <CFormTextarea name="description" onChange={handleChange} id="exampleFormControlTextarea1" rows={3}></CFormTextarea>
+                </div>
             <div className="mb-3">
               <CFormInput
                 name="song"
