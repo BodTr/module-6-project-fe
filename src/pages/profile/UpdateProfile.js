@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppHeader } from '../../components'
 
 import {
   CButton,
@@ -144,6 +145,8 @@ const UpdateProfile = () => {
   }
 
   return (
+    <>
+    <AppHeader/>
     <CContainer>
       <CRow className="justify-content-center">
         <CCol md={8}>
@@ -235,6 +238,7 @@ const UpdateProfile = () => {
         </CCol>
       </CRow>
     </CContainer>
+    </>
   )
 }
 

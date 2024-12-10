@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import ChangePassword from './pages/profile/ChangePassword';
 
 import { CSpinner, useColorModes } from '@coreui/react';
 import './scss/style.scss';
@@ -46,6 +47,7 @@ const App = () => {
         <Routes>
           {/* Redirect root (/) to /login */}
           <Route exact path="/" element={<Navigate to="/login" />} />
+          <Route path="/change-password" element={<ChangePassword />} /> 
           <Route exact path="/login" name="Login Page" element={<Login />} />
           <Route exact path="/register" name="Register Page" element={<Register />} />
           <Route exact path="/update-profile" name="Update Profile" element={<UpdateProfile />} />
