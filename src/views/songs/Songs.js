@@ -19,6 +19,10 @@ import {
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import Select from 'react-select'
+import Avatar from '@mui/material/Avatar'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
 
 const Songs = () => {
   const [jwtToken, setJwtToken] = useState('')
@@ -28,8 +32,11 @@ const Songs = () => {
     song: null,
     title: '',
     description: '',
-    singerIds: [1, 2, 3, 4],
+    singers: [],
   })
+  const [selectedSingers, setSelectedSingers] =useState([])
+  const [singersList, setSingersList] = useState([])
+  const [isUpdateMode, setIsUpdateMode] = useState(false)
 
   const initSongList = async () => {
     try {
@@ -40,14 +47,43 @@ const Songs = () => {
       })
       console.log(res.data, 'res get song api data')
       const data = res.data
-      const updatedData = data.map((item) => ({
-        ...item,
-        songStringLink: `http://localhost:8080${item.songStringLink}`,
-      }))
-      setSongsList(updatedData)
+      data.forEach((item) => {
+        // Cập nhật songStringLink
+        if (item.songStringLink) {
+          item.songStringLink = `http://localhost:8080${item.songStringLink}`
+        }
+
+        // Cập nhật avatarLinkString cho từng singer
+        if (item.singers && Array.isArray(item.singers)) {
+          item.singers.forEach((singer) => {
+            if (singer.avatarLinkString) {
+              singer.avatarLinkString = `http://localhost:8080${singer.avatarLinkString}`
+            }
+          })
+        }
+      })
+      console.log(data, 'updatedSongData')
+
+      setSongsList(data)
     } catch (error) {
       console.log(error, 'get song api error')
     }
+  }
+
+  const initSingersList = async () => {
+    const res = await axios.get('http://localhost:8080/api/singer', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+    const data = res.data
+    const updatedData = data.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }))
+
+    console.log(updatedData, 'updatedSingerData')
+    setSingersList(updatedData)
   }
 
   useEffect(() => {
@@ -59,43 +95,90 @@ const Songs = () => {
       window.location.href = '/login'
     } else {
       initSongList()
+      initSingersList()
+      console.log(formData, 'formData')
     }
-  }, [])
+  }, [formData])
 
   const handleChange = (e) => {
-    // console.log(e.target)
     const { name, value } = e.target
     setFormData({
       ...formData,
       [name]: name === 'song' ? e.target.files[0] : value,
     })
   }
+  const handleSelectSingersChange = (selectedValues) => {
+    const values = selectedValues.map((item) => item.value)
+    setFormData({
+      ...formData,
+      singers: values,
+    })
+  }
   const onSubmit = async () => {
     try {
+      const headers = {
+        Authorization: `Bearer ${jwtToken}`,
+        'Content-Type': 'multipart/form-data',
+      }
       let songInfor = new FormData()
       songInfor.append('title', formData.title)
-      songInfor.append('songFile', formData.song)
+      
       songInfor.append('description', formData.description)
-      songInfor.append('singerIds', formData.singerIds)
+      songInfor.append('singers', formData.singers) // JSON.stringify()
       console.log("song's title: " + formData.title)
-      console.log("song's singers: " + formData.singerIds)
+      console.log("song's singers: " + JSON.stringify(formData.singers))
       console.log("song's description: " + formData.description)
-      console.log("song's description: " + formData.song.name)
-      const res = await axios.post('http://localhost:8080/api/song', songInfor, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      console.log('create song api result', res)
-      if (res.status === 201) {
-        toast.success('Tạo ca sĩ thành công')
-        setVisible(false)
-        initSongList()
+      // console.log("song's description: " + formData.song.name)
+      // console.log("isUpdateMode: ", isUpdateMode)
+      if (!isUpdateMode) {
+        songInfor.append('songFile', formData.song)
+        const res = await axios.post('http://localhost:8080/api/song', songInfor, {
+          headers: headers,
+        })
+        console.log('create song api result', res)
+        if (res.status === 201) {
+          toast.success('Tạo ca sĩ thành công')
+        }
+      } else {
+        console.log(formData, 'update song formData')
+        if (formData.song) {
+          songInfor.append('songFileEdit', formData.song)
+        } else {
+          songInfor.append('songFileEdit', null)
+        }
+        
+        const res = await axios.put(`http://localhost:8080/api/song/${formData.id}`, songInfor, {
+          headers: headers,
+        })
+        if (res.status === 200) {
+          toast.success('Sửa ca sĩ thành công')
+        }
       }
     } catch (error) {
       console.log(error, 'create song api error')
+    } finally {
+      setFormData({
+        song: null,
+        title: '',
+        description: '',
+        singers: [],
+      })
+      setVisible(false)
+      initSongList()
     }
+  }
+  const editSong = (edSong) => {
+    console.log(edSong, 'edSong')
+    setIsUpdateMode(true)
+    setVisible(true)
+    const singersArr = edSong.singers.map(item => item.id)
+    const selectedS = edSong.singers.map( item => ({
+      value: item.id,
+      label: item.name
+    }))
+    setSelectedSingers(selectedS)
+    const mappedEdSong = {...edSong, singers: singersArr}
+    setFormData(mappedEdSong)
   }
   return (
     <>
@@ -123,8 +206,10 @@ const Songs = () => {
                     <CTableHead>
                       <CTableRow>
                         <CTableHeaderCell scope="col">Id</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Avatar</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Title</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Description</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Singers</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Song Player</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
@@ -141,10 +226,41 @@ const Songs = () => {
                             <CTableHeaderCell scope="row">{song.id}</CTableHeaderCell>
                             <CTableDataCell>{song.title}</CTableDataCell>
                             <CTableDataCell>{song.description}</CTableDataCell>
-                            <CTableDataCell>Song singers</CTableDataCell>
-                            <CTableDataCell>{song.songStringLink}</CTableDataCell>
                             <CTableDataCell>
-                              <CButton color="success" variant="outline">
+                              {song.singers.length === 0 ? (
+                                <p>Chưa liên kết với ca sĩ nào</p>
+                              ) : (
+                                <Stack direction="row" spacing={1}>
+                                  {song.singers.map((singer, index) => (
+                                    <Chip
+                                      color="success"
+                                      key={index}
+                                      avatar={
+                                        <Avatar alt={singer.name} src={singer.avatarLinkString} />
+                                      }
+                                      label={singer.name}
+                                      variant="outlined"
+                                    />
+                                  ))}
+                                </Stack>
+                              )}
+                            </CTableDataCell>
+                            <CTableDataCell>
+                              {song.songStringLink ? (
+                                <audio controls>
+                                  <source src={song.songStringLink} type="audio/mpeg" />
+                                  Trình duyệt của bạn không hỗ trợ phát nhạc.
+                                </audio>
+                              ) : (
+                                'Không có file nhạc'
+                              )}
+                            </CTableDataCell>
+                            <CTableDataCell>
+                              <CButton
+                                onClick={() => editSong(song)}
+                                color="success"
+                                variant="outline"
+                              >
                                 Edit
                               </CButton>
                               <CButton color="danger" variant="outline">
@@ -168,25 +284,48 @@ const Songs = () => {
         aria-labelledby="LiveDemoExampleLabel"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">Create Song</CModalTitle>
+          <CModalTitle id="LiveDemoExampleLabel">
+            {isUpdateMode ? 'Update Song' : 'Add Song'}
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <div className="mb-3">
               <CFormInput
+                value={formData.title}
                 type="text"
                 name="title"
                 id="exampleFormControlInput1"
-                label="title"
+                label="Title"
                 placeholder="Enter song's title"
                 aria-describedby="exampleFormControlInputHelpInline"
                 onChange={handleChange}
               />
             </div>
             <div className="mb-3">
-                  <CFormLabel htmlFor="exampleFormControlTextarea1">Description</CFormLabel>
-                  <CFormTextarea name="description" onChange={handleChange} id="exampleFormControlTextarea1" rows={3}></CFormTextarea>
-                </div>
+              <CFormLabel htmlFor="exampleFormControlTextarea1">Description</CFormLabel>
+              <CFormTextarea
+                value={formData.description}
+                name="description"
+                onChange={handleChange}
+                id="exampleFormControlTextarea1"
+                rows={3}
+              ></CFormTextarea>
+            </div>
+            <div className="mb-3">
+              <CFormLabel>Ca sĩ</CFormLabel>
+              <Select
+                defaultValue={selectedSingers}
+                isMulti
+                name="singers"
+                // getOptionValue={formData.singers}
+                onChange={handleSelectSingersChange}
+                options={singersList}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                closeMenuOnSelect={false}
+              />
+            </div>
             <div className="mb-3">
               <CFormInput
                 name="song"
@@ -203,7 +342,7 @@ const Songs = () => {
             Close
           </CButton>
           <CButton color="primary" onClick={onSubmit}>
-            Save changes
+            {isUpdateMode ? 'Update' : 'Create'}
           </CButton>
         </CModalFooter>
       </CModal>
