@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import ChangePassword from './pages/profile/ChangePassword';
 
 import { CSpinner, useColorModes } from '@coreui/react';
+import 'react-h5-audio-player/src/styles.scss';
 import './scss/style.scss';
 
 // We use those styles to show code examples, you should remove them in your application.
 import './scss/examples.scss';
+
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'));

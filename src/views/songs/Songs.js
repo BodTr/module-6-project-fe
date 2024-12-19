@@ -28,6 +28,7 @@ const Songs = () => {
   const [jwtToken, setJwtToken] = useState('')
   const [songsList, setSongsList] = useState([])
   const [visible, setVisible] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [formData, setFormData] = useState({
     song: null,
     title: '',
@@ -37,6 +38,15 @@ const Songs = () => {
   const [selectedSingers, setSelectedSingers] =useState([])
   const [singersList, setSingersList] = useState([])
   const [isUpdateMode, setIsUpdateMode] = useState(false)
+  const [deleteId, setDeleteId] = useState('')
+
+  const handleClose = () => setVisible(false)
+  const handleShow = () => setVisible(true)
+  const handleClose1 = () => {
+    setShowDeleteModal(false)
+    setDeleteId("")
+  }
+  const handleShow1 = () => setShowDeleteModal(true)
 
   const initSongList = async () => {
     try {
@@ -167,10 +177,21 @@ const Songs = () => {
       initSongList()
     }
   }
+  const onCreateSong = () => {
+    handleShow()
+    setSelectedSingers([])
+    setFormData({
+      song: null,
+      title: '',
+      description: '',
+      singers: [],
+    })
+    setIsUpdateMode(false)
+  }
   const editSong = (edSong) => {
     console.log(edSong, 'edSong')
     setIsUpdateMode(true)
-    setVisible(true)
+    handleShow()
     const singersArr = edSong.singers.map(item => item.id)
     const selectedS = edSong.singers.map( item => ({
       value: item.id,
@@ -180,6 +201,27 @@ const Songs = () => {
     const mappedEdSong = {...edSong, singers: singersArr}
     setFormData(mappedEdSong)
   }
+  const deleteSong = (songId) => {
+    handleShow1()
+    setDeleteId(songId)
+  }
+  const deleteS = async () => {
+    try {
+      console.log("delete song id: ", deleteId)
+      const res = await axios.delete(`http://localhost:8080/api/song/${deleteId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      })
+      console.log(res, "delete song api res");
+    } catch (error) {
+      console.log(error, "delete book api error")
+    } finally {
+      initSongList()
+      handleClose1()
+    }
+  }
+
   return (
     <>
       <div className="page-wrapper">
@@ -190,7 +232,7 @@ const Songs = () => {
                 <h2 className="page-title">Song Page</h2>
               </div>
               <div className="col-auto ms-auto d-print-none">
-                <CButton color="primary" onClick={() => setVisible(!visible)}>
+                <CButton color="primary" onClick={onCreateSong}>
                   Create new song
                 </CButton>
               </div>
@@ -263,7 +305,7 @@ const Songs = () => {
                               >
                                 Edit
                               </CButton>
-                              <CButton color="danger" variant="outline">
+                              <CButton color="danger" variant="outline" onClick={() => deleteSong(song.id)}>
                                 Delete
                               </CButton>
                             </CTableDataCell>
@@ -279,12 +321,13 @@ const Songs = () => {
         </div>
       </div>
       <CModal
+        backdrop="static"
         visible={visible}
-        onClose={() => setVisible(false)}
-        aria-labelledby="LiveDemoExampleLabel"
+        onClose={handleClose}
+        aria-labelledby="CreateEditModal"
       >
         <CModalHeader>
-          <CModalTitle id="LiveDemoExampleLabel">
+          <CModalTitle id="CreateEditModal">
             {isUpdateMode ? 'Update Song' : 'Add Song'}
           </CModalTitle>
         </CModalHeader>
@@ -338,13 +381,37 @@ const Songs = () => {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
+          <CButton color="secondary" onClick={handleClose}>
             Close
           </CButton>
           <CButton color="primary" onClick={onSubmit}>
             {isUpdateMode ? 'Update' : 'Create'}
           </CButton>
         </CModalFooter>
+      </CModal>
+      <CModal
+        backdrop="static"
+        visible={showDeleteModal}
+        onClose={handleClose1}
+        aria-labelledby="DeleteModal"
+      >
+        <CModalHeader>
+          <CModalTitle id="DeleteModal">
+            Delete Song
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          Are you want to delete this song?
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={handleClose1}>
+            Close
+          </CButton>
+          <CButton color="danger" onClick={deleteS}>
+            Delete
+          </CButton>
+        </CModalFooter>
+
       </CModal>
     </>
   )
