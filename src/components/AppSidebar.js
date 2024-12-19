@@ -1,6 +1,6 @@
 import React from 'react'
+import { GiHamburgerMenu } from 'react-icons/gi'
 import { useSelector, useDispatch } from 'react-redux'
-
 import {
   CCloseButton,
   CSidebar,
