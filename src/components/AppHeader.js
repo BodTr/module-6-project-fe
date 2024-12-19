@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -13,6 +13,8 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
+  CFormInput,
+  CButton,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -24,6 +26,7 @@ import {
   cilMoon,
   cilSun,
 } from '@coreui/icons'
+import { cilZoom } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
@@ -35,6 +38,20 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  // State lưu từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Xử lý sự kiện tìm kiếm
+  const handleSearch = () => {
+    console.log('Từ khóa tìm kiếm:', searchTerm)
+    // Gửi API hoặc logic tìm kiếm tại đây
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
   useEffect(() => {
     document.addEventListener('scroll', () => {
       headerRef.current &&
@@ -51,18 +68,23 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
-        <CHeaderNav className="d-none d-md-flex">
-          <CNavItem>
-            {/* <CNavLink to="/users" as={NavLink}>
-              Dashboard
-            </CNavLink> */}
-            <CNavLink href="#">
-              Bích Bờ Bôn Music Dashboard
-            </CNavLink>
-          </CNavItem>
+
+        {/* Thanh tìm kiếm */}
+        <CHeaderNav className=" d-md-flex align-items-center gap-2">
+          <CFormInput
+            type="text"
+            placeholder="Tìm kiếm"
+            aria-label="default input example"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <CButton color="success" variant="outline" onClick={handleSearch}>
+            <CIcon icon={cilZoom} size="xl" style={{ '--ci-primary-color': 'green' }} />
+          </CButton>
         </CHeaderNav>
-        <CHeaderNav className="ms-auto">
-        </CHeaderNav>
+
+        <CHeaderNav className="ms-auto"></CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>

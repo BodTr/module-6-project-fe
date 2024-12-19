@@ -3,7 +3,7 @@ import { StyledEngineProvider } from '@mui/material/styles'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import 'core-js'
-import './style/customize-progress-bar.css'
+
 
 import App from './App'
 import store from './store'
