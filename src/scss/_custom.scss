@@ -1,1 +1,27 @@
-// Here you can add other styles
+.bg-body-tertiary {
+  background: url('https://as1.ftcdn.net/v2/jpg/02/33/25/80/1000_F_233258010_H9AuJE4ZEoF5sON9Tj6yQoA8gsDNwB24.jpg') no-repeat center center / cover; // Đường dẫn ảnh
+  height: 100vh; // Chiều cao full màn hình
+  position: relative;
+
+  // Lớp phủ (overlay) để tạo hiệu ứng mờ
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); // Lớp phủ màu đen mờ
+    z-index: 1;
+  }
+
+  // Đảm bảo nội dung nằm trên lớp phủ
+  > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+.bg-custom {
+  background-color: #00356B; // Coral (màu tùy chỉnh)
+  color: white; // Màu chữ
+}
