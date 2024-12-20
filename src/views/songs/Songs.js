@@ -256,7 +256,7 @@ const Songs = () => {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {songsList.length === 0 ? (
+                      {songsList.length === 0 || songsList === null ? (
                         <CTableRow>
                           <CTableDataCell colSpan={4} className="text-center">
                             Chưa có data
