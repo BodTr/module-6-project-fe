@@ -60,16 +60,16 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div className=" bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>
             <CCardGroup>
-              <CCard className="p-4">
+              <CCard className="p-4 bg-custom">
                 <CCardBody>
                   <CForm onSubmit={handleSubmit}>
                     <h1>Đăng Nhập</h1>
-                    <p className="text-body-secondary">Đăng nhập vào tài khoản của bạn</p>
+                    <p className=" text-white">Đăng nhập vào tài khoản của bạn</p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
@@ -100,30 +100,30 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton type="submit" color="primary" className="px-4">
+                        <CButton type="submit" color="secondary" className="px-4">
                           Đăng Nhập
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                         Quên mật khẩu
+                        <CButton color="link" className="px-0 text-warning">
+                          Quên mật khẩu
                         </CButton>
                       </CCol>
                     </CRow>
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
+              <CCard className="text-white bg-dark py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Đăng kí</h2>
+                    <h2>Đăng ký</h2>
                     <p>
-                      Hãy đăng kí là thành viên của Bích Bồ Bôn Music để lắng nghe những ca khúc hot
+                      Hãy đăng ký là thành viên của Bích Bồ Bôn Music để lắng nghe những ca khúc hot
                       hit nhé!!
                     </p>
                     <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Đăng kí ngay!
+                      <CButton color="success" className="mt-3" active tabIndex={-1}>
+                        Đăng ký ngay!
                       </CButton>
                     </Link>
                   </div>
