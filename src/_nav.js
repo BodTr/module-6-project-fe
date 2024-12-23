@@ -16,7 +16,9 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
-const _nav = [
+const role = localStorage.getItem('role')
+
+const AdminNav = [
   {
     component: CNavTitle,
     name: 'Menu',
@@ -39,5 +41,19 @@ const _nav = [
 
 
 ]
+
+let _nav = []
+
+if (role === 'USER') {
+  _nav = [
+    {
+      component: CNavTitle,
+      name: 'Playlists'
+    },
+  ]
+} else {
+  _nav = AdminNav
+}
+
 
 export default _nav

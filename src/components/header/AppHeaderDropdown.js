@@ -42,8 +42,9 @@ const AppHeaderDropdown = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token') // Xóa token
-    localStorage.removeItem('user') // Xóa thông tin người dùng
+    // localStorage.removeItem('token') // Xóa token
+    // localStorage.removeItem('user') // Xóa thông tin người dùng
+    localStorage.clear()
     navigate('/login') // Điều hướng đến trang Login
   }
 

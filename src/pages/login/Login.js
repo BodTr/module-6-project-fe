@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { jwtDecode } from "jwt-decode"
 import {
   CButton,
   CCard,
@@ -44,11 +45,20 @@ const Login = () => {
       if (!token) {
         throw new Error('Token k tồn tại.')
       }
+      const decoded = jwtDecode(token)
+      const role = decoded.roles[0]
+      console.log("decoded token role: ", role)
       localStorage.setItem('token', token) // Lưu token vào localStorage
+      localStorage.setItem('role', role)
       localStorage.setItem('username', response.data.displayName) // Lưu token vào localStorage
       toast.success('Đăng nhập thành công!')
       setTimeout(() => {
-        navigate('/dashboard') // Điều hướng về trang chủ
+        if (role === 'ADMIN') {
+          navigate('/users') // Điều hướng về trang chủ
+        } else {
+          navigate('/client')
+        }
+        
       }, 2000)
     } catch (error) {
       if (error.response && error.response.data) {
