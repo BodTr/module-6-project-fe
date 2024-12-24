@@ -1,10 +1,9 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
+import { CContainer, CRow, CCol } from '@coreui/react'
+import Song from '../../components/userComponents/Song'
+import SongsCarousel from '../../components/userComponents/SongsCarousel'
 
 const SingerClient = () => {
   const location = useLocation()
@@ -39,10 +38,25 @@ const SingerClient = () => {
 
   return (
     <>
-      <div>
-        <h1>Trang chi tiết ca sĩ {singerName} </h1>
-        <img src={singerAvatar} />
-      </div>
+      <CContainer fluid>
+        <CRow style={{ backgroundImage:`url(${singerAvatar})`, height: '250px' }}>
+          <h1 style={{ color: 'black', paddingTop: '140px', paddingLeft: '1rem', fontSize: '75px'  }}>{singerName}</h1>
+        </CRow>
+        <CRow>
+          <CCol xs={12} md={6}>
+            <CRow><p>Popular</p></CRow>
+            <CRow>
+              <Song  />
+            </CRow>
+          </CCol>
+          <CCol xs={12} md={6}>
+            <CRow><p>Artist pick</p></CRow>
+            <CRow><SongsCarousel /></CRow>
+          </CCol>
+        </CRow>
+      </CContainer>
+
+
     </>
   )
 }
