@@ -46,6 +46,7 @@ const Register = () => {
         displayName: formData.displayName,
         phone: formData.phone,
         password: formData.password,
+        role: 'USER'
       });
 
       toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
