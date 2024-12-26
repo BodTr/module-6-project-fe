@@ -14,8 +14,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser, cilPhone } from '@coreui/icons';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -160,7 +159,6 @@ const Register = () => {
           </CCol>
         </CRow>
       </CContainer>
-      <ToastContainer />
     </div>
   );
 };

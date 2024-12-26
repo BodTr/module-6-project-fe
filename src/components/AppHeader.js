@@ -36,7 +36,8 @@ const AppHeader = () => {
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const sidebarShow = useSelector((state) => state.changeState.sidebarShow)
+  console.log(sidebarShow, "sidebarShow")
 
   // State lưu từ khóa tìm kiếm
   const [searchTerm, setSearchTerm] = useState('')
@@ -57,6 +58,7 @@ const AppHeader = () => {
       headerRef.current &&
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
     })
+    
   }, [])
 
   return (

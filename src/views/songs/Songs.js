@@ -138,7 +138,7 @@ const Songs = () => {
       console.log("song's title: " + formData.title)
       console.log("song's singers: " + JSON.stringify(formData.singers))
       console.log("song's description: " + formData.description)
-      // console.log("song's description: " + formData.song.name)
+      console.log("singers: " + formData.singers)
       // console.log("isUpdateMode: ", isUpdateMode)
       if (!isUpdateMode) {
         songInfor.append('songFile', formData.song)
@@ -147,7 +147,7 @@ const Songs = () => {
         })
         console.log('create song api result', res)
         if (res.status === 201) {
-          toast.success('Tạo ca sĩ thành công')
+          toast.success('Tạo bài hát thành công')
         }
       } else {
         console.log(formData, 'update song formData')
@@ -161,7 +161,7 @@ const Songs = () => {
           headers: headers,
         })
         if (res.status === 200) {
-          toast.success('Sửa ca sĩ thành công')
+          toast.success('Sửa bài học thành công')
         }
       }
     } catch (error) {
