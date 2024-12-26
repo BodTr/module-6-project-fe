@@ -6,7 +6,7 @@ import { BsPlay } from 'react-icons/bs'
 
 const AppFooter = () => {
   return (
-    <CFooter style={{ width: '100%', padding: '15px 0px 0px 0px'}}>
+    <CFooter position="sticky" style={{ width: '100%', padding: '15px 0px 0px 0px'}}>
       {/* <ReactPlayer url={'./song1.mp3'} controls={true} width={"100%"} height={"15px"} config={{ file: {forceAudio: true} }} /> */}
       <AudioPlayer
         src="/song1.mp3"

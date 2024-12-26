@@ -25,7 +25,7 @@ const AdminNav = [
   },
   {
     component: CNavItem,
-    name: 'AdUsers',
+    name: 'Users',
     to: '/users'
   },
   {

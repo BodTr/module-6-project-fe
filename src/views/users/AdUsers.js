@@ -35,7 +35,7 @@ const AdUsers = () => {
 
   return (
     <div>
-      <h1>Danh sách người dùng</h1>
+      <h1>Users List</h1>
       <table className="table table-bordered">
         <thead>
           <tr>

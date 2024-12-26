@@ -17,8 +17,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'react-toastify'
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -143,7 +142,6 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
-      <ToastContainer />
     </div>
   )
 }
